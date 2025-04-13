@@ -1,20 +1,37 @@
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+// OwnerApp/App.js
+import 'react-native-gesture-handler';
+import { NavigationContainer } from '@react-navigation/native';
+import { createStackNavigator } from '@react-navigation/stack';
+import LoginScreen from './screens/LoginScreen';
+import OwnerHomeScreen from './screens/OwnerHomeScreen';
+import TestDBConnection from './screens/TestDBConnection';
+
+const Stack = createStackNavigator();
 
 export default function App() {
   return (
-    <View style={styles.container}>
-      <Text>Open up App.js to start working on your app!</Text>
-      <StatusBar style="auto" />
-    </View>
+    <NavigationContainer>
+      <Stack.Navigator initialRouteName="Login">
+        {/* Login Screen */}
+        <Stack.Screen
+          name="Login"
+          component={LoginScreen}
+          options={{ title: 'Owner Login' }}
+        />
+        {/* Home Screen */}
+        <Stack.Screen
+          name="OwnerHome"
+          component={OwnerHomeScreen}
+          options={{ title: 'Owner Dashboard' }}
+        />
+        {/* Test Database Connection Screen */}
+        <Stack.Screen
+          name="TestDBConnection"
+          component={TestDBConnection}
+          options={{ title: 'Database Connection Test' }}
+        />
+        {/* Add other screens as needed */}
+      </Stack.Navigator>
+    </NavigationContainer>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
