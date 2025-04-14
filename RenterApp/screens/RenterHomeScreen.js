@@ -25,7 +25,6 @@ export default function RenterHomeScreen({ navigation }) {
         <Button
           title="Search Listings"
           onPress={() => navigation.navigate('SearchScreen')}
-          color="#2a9d8f"
         />
       </View>
 
@@ -33,23 +32,20 @@ export default function RenterHomeScreen({ navigation }) {
         <Button
           title="My Bookings"
           onPress={() => navigation.navigate('MyBookings')}
-          color="#457b9d"
         />
       </View>
 
-      <View style={styles.buttonContainer}>
+      {/* <View style={styles.buttonContainer}>
         <Button
           title="Test Database Connection"
           onPress={() => navigation.navigate('TestDBConnection')}
-          color="#888"
         />
-      </View>
+      </View> */}
 
       <View style={styles.buttonContainer}>
         <Button
           title="Logout"
           onPress={handleLogout}
-          color="#d00"
         />
       </View>
     </View>
