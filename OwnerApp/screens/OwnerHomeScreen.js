@@ -1,9 +1,10 @@
 // OwnerApp/screens/OwnerHomeScreen.js
 import React, { useEffect, useState } from 'react';
-import { View, Text, Button, StyleSheet, Alert, ActivityIndicator } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, Alert, ActivityIndicator } from 'react-native';
 import { auth, db } from '../firebaseConfig';
 import { signOut } from 'firebase/auth';
 import { doc, getDoc } from 'firebase/firestore';
+import { colors } from '../styles/colors';
 
 export default function OwnerHomeScreen({ navigation }) {
   const [userEmail, setUserEmail] = useState('');
@@ -44,11 +45,12 @@ export default function OwnerHomeScreen({ navigation }) {
     // Set up navigation options (including logout button)
     navigation.setOptions({
       headerRight: () => (
-        <Button
+        <TouchableOpacity
           onPress={handleLogout}
-          title="Logout"
-          color="#d00"
-        />
+          style={styles.logoutButton}
+        >
+          <Text style={styles.logoutButtonText}>Logout</Text>
+        </TouchableOpacity>
       ),
     });
   }, [navigation]);
@@ -70,38 +72,51 @@ export default function OwnerHomeScreen({ navigation }) {
   return (
     <View style={styles.container}>
       {loading ? (
-        <ActivityIndicator size="large" color="#2a9d8f" />
+        <ActivityIndicator size="large" color={colors.primary} />
       ) : (
         <>
-          <Text style={styles.title}>Welcome, {userEmail}!</Text>
-          <Text style={styles.roleTag}>Account Type: Owner</Text>
-          <Text style={styles.subtitle}>What would you like to do today?</Text>
+          <View style={styles.headerContainer}>
+            <Text style={styles.title}>Welcome, {userEmail}!</Text>
+            <Text style={styles.roleTag}>Account Type: Owner</Text>
+            <Text style={styles.subtitle}>What would you like to do today?</Text>
+          </View>
+
+          <View style={styles.cardContainer}>
+            <TouchableOpacity
+              style={styles.actionCard}
+              onPress={() => navigation.navigate('CreateListing')}
+            >
+              <View style={[styles.cardIcon, { backgroundColor: colors.accent }]}>
+                <Text style={styles.cardIconText}>+</Text>
+              </View>
+              <Text style={styles.cardTitle}>Create New Listing</Text>
+              <Text style={styles.cardDescription}>Add a new car to your listings</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={styles.actionCard}
+              onPress={() => navigation.navigate('MyListings')}
+            >
+              <View style={[styles.cardIcon, { backgroundColor: colors.secondary }]}>
+                <Text style={styles.cardIconText}>📋</Text>
+              </View>
+              <Text style={styles.cardTitle}>View My Listings</Text>
+              <Text style={styles.cardDescription}>Manage your car listings and bookings</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={[styles.actionCard, styles.testCard]}
+              onPress={() => navigation.navigate('TestDBConnection')}
+            >
+              <View style={[styles.cardIcon, { backgroundColor: colors.warning }]}>
+                <Text style={styles.cardIconText}>🔍</Text>
+              </View>
+              <Text style={styles.cardTitle}>Test Connection</Text>
+              <Text style={styles.cardDescription}>Verify database connectivity</Text>
+            </TouchableOpacity>
+          </View>
         </>
       )}
-
-      <View style={styles.buttonContainer}>
-        <Button
-          title="Create New Listing"
-          onPress={() => navigation.navigate('CreateListing')}
-          color="#2a9d8f"
-        />
-      </View>
-
-      <View style={styles.buttonContainer}>
-        <Button
-          title="View My Listings"
-          onPress={() => navigation.navigate('MyListings')}
-          color="#457b9d"
-        />
-      </View>
-
-      <View style={styles.buttonContainer}>
-        <Button
-          title="Test Database Connection"
-          onPress={() => navigation.navigate('TestDBConnection')}
-          color="#888"
-        />
-      </View>
     </View>
   );
 }
@@ -109,33 +124,90 @@ export default function OwnerHomeScreen({ navigation }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 16,
-    justifyContent: 'center',
+    padding: 20,
+    backgroundColor: colors.background,
+  },
+  headerContainer: {
+    marginTop: 20,
+    marginBottom: 30,
+    alignItems: 'center',
   },
   title: {
-    fontSize: 24,
+    fontSize: 28,
     fontWeight: 'bold',
-    marginBottom: 8,
+    marginBottom: 12,
     textAlign: 'center',
+    color: colors.primary,
   },
   subtitle: {
     fontSize: 16,
-    color: '#666',
-    marginBottom: 32,
+    color: colors.textSecondary,
+    marginTop: 8,
     textAlign: 'center',
   },
   roleTag: {
     fontSize: 14,
     color: '#fff',
-    backgroundColor: '#2a9d8f',
-    paddingVertical: 4,
-    paddingHorizontal: 12,
-    borderRadius: 16,
+    backgroundColor: colors.secondary,
+    paddingVertical: 6,
+    paddingHorizontal: 16,
+    borderRadius: 20,
     alignSelf: 'center',
-    marginBottom: 16,
+    marginBottom: 4,
     overflow: 'hidden',
   },
-  buttonContainer: {
+  cardContainer: {
+    flex: 1,
+    alignItems: 'stretch',
+  },
+  actionCard: {
+    backgroundColor: colors.card,
+    borderRadius: 12,
+    padding: 20,
     marginBottom: 16,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 2,
+    flexDirection: 'column',
+  },
+  testCard: {
+    opacity: 0.85,
+  },
+  cardIcon: {
+    width: 50,
+    height: 50,
+    borderRadius: 25,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 16,
+  },
+  cardIconText: {
+    fontSize: 24,
+    color: '#fff',
+    fontWeight: 'bold',
+  },
+  cardTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginBottom: 8,
+    color: colors.text,
+  },
+  cardDescription: {
+    fontSize: 14,
+    color: colors.textSecondary,
+  },
+  logoutButton: {
+    backgroundColor: colors.error,
+    paddingVertical: 6,
+    paddingHorizontal: 12,
+    borderRadius: 6,
+    marginRight: 10,
+  },
+  logoutButtonText: {
+    color: '#fff',
+    fontWeight: 'bold',
+    fontSize: 14,
   },
 });
