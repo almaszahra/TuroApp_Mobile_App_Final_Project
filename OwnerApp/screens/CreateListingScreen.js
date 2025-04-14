@@ -203,7 +203,7 @@ const styles = StyleSheet.create({
     borderRadius: 4,
     marginBottom: 16,
     paddingHorizontal: 8,
-    color:"rgb(160, 160, 160)",
+    color:"rgb(0, 0, 0)",
   },
   buttonContainer: {
     marginVertical: 8,

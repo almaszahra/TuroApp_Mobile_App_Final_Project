@@ -6,7 +6,7 @@ import { doc, getDoc, setDoc, serverTimestamp } from 'firebase/firestore';
 
 export default function LoginScreen({ navigation }) {
   const [email, setEmail] = useState('almas@owner.com');
-  const [password, setPassword] = useState('password123');
+  const [password, setPassword] = useState('almas1');
   const [accountType, setAccountType] = useState('owner'); // Default to owner since this is the Owner app
   const [loading, setLoading] = useState(false);
 
@@ -117,7 +117,7 @@ export default function LoginScreen({ navigation }) {
       />
 
       <Text style={styles.testNote}>
-        Note: For testing, you can use almas@owner.com / password123
+        Note: For testing, you can use email- owner1@test.com / password- owner1@test.com
       </Text>
     </View>
   );
