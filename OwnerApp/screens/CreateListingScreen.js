@@ -4,7 +4,7 @@ import {
   View,
   Text,
   TextInput,
-  Button,
+  TouchableOpacity,
   StyleSheet,
   ScrollView,
   Alert,
@@ -13,6 +13,7 @@ import {
 } from 'react-native';
 import { db, auth } from '../firebaseConfig';
 import { collection, addDoc, serverTimestamp, doc, getDoc } from 'firebase/firestore';
+import { colors } from '../styles/colors';
 
 export default function CreateListingScreen({ navigation }) {
   // Form state
@@ -82,7 +83,7 @@ export default function CreateListingScreen({ navigation }) {
       Alert.alert(
         'Success',
         'Your car listing has been created!',
-        [{ text: 'OK', onPress: () => navigation.navigate('MyListings') }]
+        [{ text: 'OK', onPress: () => navigation.replace('MyListings') }]
       );
     } catch (error) {
       console.error('Error creating listing: ', error);
@@ -95,83 +96,91 @@ export default function CreateListingScreen({ navigation }) {
   return (
     <KeyboardAvoidingView
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-      style={{ flex: 1 }}
+      style={{ flex: 1, backgroundColor: colors.background }}
     >
       <ScrollView style={styles.container}>
         <Text style={styles.title}>Create New Car Listing</Text>
+        <Text style={styles.subtitle}>Enter your car details below</Text>
 
-        <Text style={styles.label}>Car Model</Text>
-        <TextInput
-          style={styles.input}
-          placeholder="e.g., Honda Civic"
-          placeholderTextColor="#999"
-          value={carModel}
-          onChangeText={setCarModel}
-        />
+        <View style={styles.formCard}>
+          <Text style={styles.label}>Car Model</Text>
+          <TextInput
+            style={styles.input}
+            placeholder="e.g., Honda Civic"
+            placeholderTextColor={colors.textSecondary}
+            value={carModel}
+            onChangeText={setCarModel}
+          />
 
-        <Text style={styles.label}>License Plate</Text>
-        <TextInput
-          style={styles.input}
-          placeholder="e.g., ABC123"
-          placeholderTextColor="#999"
-          value={licensePlate}
-          onChangeText={setLicensePlate}
-          autoCapitalize="characters"
-        />
+          <Text style={styles.label}>License Plate</Text>
+          <TextInput
+            style={styles.input}
+            placeholder="e.g., ABC123"
+            placeholderTextColor={colors.textSecondary}
+            value={licensePlate}
+            onChangeText={setLicensePlate}
+            autoCapitalize="characters"
+          />
 
-        <Text style={styles.label}>Cost per Day ($)</Text>
-        <TextInput
-          style={styles.input}
-          placeholder="e.g., 50"
-          placeholderTextColor="#999"
-          value={costPerDay}
-          onChangeText={setCostPerDay}
-          keyboardType="numeric"
-        />
+          <Text style={styles.label}>Cost per Day ($)</Text>
+          <TextInput
+            style={styles.input}
+            placeholder="e.g., 50"
+            placeholderTextColor={colors.textSecondary}
+            value={costPerDay}
+            onChangeText={setCostPerDay}
+            keyboardType="numeric"
+          />
 
-        <Text style={styles.label}>Photo URL</Text>
-        <TextInput
-          style={styles.input}
-          placeholder="https://example.com/car-photo.jpg"
-          placeholderTextColor="#999"
-          value={photoUrl}
-          onChangeText={setPhotoUrl}
-          keyboardType="url"
-          autoCapitalize="none"
-        />
+          <Text style={styles.label}>Photo URL</Text>
+          <TextInput
+            style={styles.input}
+            placeholder="https://example.com/car-photo.jpg"
+            placeholderTextColor={colors.textSecondary}
+            value={photoUrl}
+            onChangeText={setPhotoUrl}
+            keyboardType="url"
+            autoCapitalize="none"
+          />
 
-        <Text style={styles.label}>City</Text>
-        <TextInput
-          style={styles.input}
-          placeholder="e.g., Toronto"
-          placeholderTextColor="#999"
-          value={city}
-          onChangeText={setCity}
-        />
+          <Text style={styles.label}>City</Text>
+          <TextInput
+            style={styles.input}
+            placeholder="e.g., Toronto"
+            placeholderTextColor={colors.textSecondary}
+            value={city}
+            onChangeText={setCity}
+          />
 
-        <Text style={styles.label}>Address</Text>
-        <TextInput
-          style={styles.input}
-          placeholder="e.g., 123 Main Street"
-          placeholderTextColor="#999"
-          value={address}
-          onChangeText={setAddress}
-        />
-
-        <View style={styles.buttonContainer}>
-          <Button
-            title={loading ? "Creating..." : "Create Listing"}
-            onPress={handleCreateListing}
-            disabled={loading}
+          <Text style={styles.label}>Address</Text>
+          <TextInput
+            style={styles.input}
+            placeholder="e.g., 123 Main Street"
+            placeholderTextColor={colors.textSecondary}
+            value={address}
+            onChangeText={setAddress}
           />
         </View>
 
         <View style={styles.buttonContainer}>
-          <Button
-            title="Cancel"
+          <TouchableOpacity
+            style={[styles.createButton, loading && styles.buttonDisabled]}
+            onPress={handleCreateListing}
+            disabled={loading}
+          >
+            <Text style={styles.buttonText}>
+              {loading ? "Creating..." : "Create Listing"}
+            </Text>
+          </TouchableOpacity>
+        </View>
+
+        <View style={styles.buttonContainer}>
+          <TouchableOpacity
+            style={styles.cancelButton}
             onPress={() => navigation.goBack()}
-            color="#888"
-          />
+          >
+            <Text style={styles.cancelButtonText}>Cancel</Text>
+          </TouchableOpacity>
         </View>
 
         <View style={styles.spacer} />
@@ -183,30 +192,84 @@ export default function CreateListingScreen({ navigation }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 16,
+    padding: 20,
+    backgroundColor: colors.background,
   },
   title: {
-    fontSize: 24,
+    fontSize: 26,
     fontWeight: 'bold',
+    marginBottom: 8,
+    textAlign: 'center',
+    color: colors.primary,
+  },
+  subtitle: {
+    fontSize: 16,
+    color: colors.textSecondary,
     marginBottom: 24,
     textAlign: 'center',
+  },
+  formCard: {
+    backgroundColor: colors.card,
+    borderRadius: 12,
+    padding: 20,
+    marginBottom: 20,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 2,
   },
   label: {
     fontSize: 16,
     fontWeight: 'bold',
-    marginBottom: 4,
+    marginBottom: 6,
+    color: colors.text,
   },
   input: {
     height: 50,
     borderWidth: 1,
-    borderColor: '#ccc',
-    borderRadius: 4,
-    marginBottom: 16,
-    paddingHorizontal: 8,
-    color:"rgb(0, 0, 0)",
+    borderColor: colors.border,
+    borderRadius: 8,
+    marginBottom: 20,
+    paddingHorizontal: 12,
+    color: colors.text,
+    backgroundColor: colors.background,
+    fontSize: 16,
   },
   buttonContainer: {
-    marginVertical: 8,
+    marginVertical: 10,
+  },
+  createButton: {
+    backgroundColor: colors.accent,
+    paddingVertical: 14,
+    borderRadius: 8,
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 3,
+    elevation: 2,
+  },
+  buttonDisabled: {
+    opacity: 0.7,
+  },
+  buttonText: {
+    color: '#fff',
+    fontWeight: 'bold',
+    fontSize: 16,
+  },
+  cancelButton: {
+    backgroundColor: colors.background,
+    paddingVertical: 14,
+    borderRadius: 8,
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: colors.secondary,
+  },
+  cancelButtonText: {
+    color: colors.secondary,
+    fontWeight: 'bold',
+    fontSize: 16,
   },
   spacer: {
     height: 40,

@@ -7,6 +7,7 @@ import OwnerHomeScreen from './screens/OwnerHomeScreen';
 import CreateListingScreen from './screens/CreateListingScreen';
 import MyListingsScreen from './screens/MyListingsScreen';
 import TestDBConnection from './screens/TestDBConnection';
+import { colors } from './styles/colors';
 
 const Stack = createStackNavigator();
 
@@ -17,12 +18,15 @@ export default function App() {
         initialRouteName="Login"
         screenOptions={{
           headerStyle: {
-            backgroundColor: '#2a9d8f',
+            backgroundColor: colors.primary,
+            elevation: 0, // Remove shadow on Android
+            shadowOpacity: 0, // Remove shadow on iOS
           },
           headerTintColor: '#fff',
           headerTitleStyle: {
             fontWeight: 'bold',
           },
+          cardStyle: { backgroundColor: colors.background },
         }}
       >
         {/* Login Screen */}
@@ -40,7 +44,7 @@ export default function App() {
         <Stack.Screen
           name="OwnerHome"
           component={OwnerHomeScreen}
-          options={{ title: 'Owner Dashboard' }}
+          options={{ title: 'Dashboard' }}
         />
 
         {/* Create Listing Screen */}
