@@ -119,7 +119,7 @@ export default function LoginScreen({ navigation }) {
       />
 
       <Text style={styles.testNote}>
-        Note: For testing, you can use renter1@test.com / password123
+        Note: For testing, you can use renter1@test.com / renter1@test.com
       </Text>
     </View>
   );
