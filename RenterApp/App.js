@@ -5,6 +5,8 @@ import { createStackNavigator } from '@react-navigation/stack';
 import LoginScreen from './screens/LoginScreen';
 import RenterHomeScreen from './screens/RenterHomeScreen';
 import TestDBConnection from './screens/TestDBConnection';
+import SearchScreen from './screens/SearchScreen';
+import MyBookings from './screens/MyBookings';
 
 const Stack = createStackNavigator();
 
@@ -23,6 +25,18 @@ export default function App() {
           name="RenterHome"
           component={RenterHomeScreen}
           options={{ title: 'Renter Dashboard' }}
+        />
+        {/* Search Screen */}
+        <Stack.Screen
+          name="SearchScreen"
+          component={SearchScreen}
+          options={{ title: 'Search Screen' }}
+        />
+        {/* My Bookings Screen */}
+        <Stack.Screen
+          name="MyBookings"
+          component={MyBookings}
+          options={{ title: 'My Bookings Screen' }}
         />
         {/* Test Database Connection Screen */}
         <Stack.Screen
