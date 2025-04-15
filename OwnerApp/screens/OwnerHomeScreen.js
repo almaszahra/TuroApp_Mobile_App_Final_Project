@@ -104,6 +104,7 @@ export default function OwnerHomeScreen({ navigation }) {
               <Text style={styles.cardDescription}>Manage your car listings and bookings</Text>
             </TouchableOpacity>
 
+            {/* Test Database Connection - Commented out for production
             <TouchableOpacity
               style={[styles.actionCard, styles.testCard]}
               onPress={() => navigation.navigate('TestDBConnection')}
@@ -114,6 +115,7 @@ export default function OwnerHomeScreen({ navigation }) {
               <Text style={styles.cardTitle}>Test Connection</Text>
               <Text style={styles.cardDescription}>Verify database connectivity</Text>
             </TouchableOpacity>
+            */}
           </View>
         </>
       )}

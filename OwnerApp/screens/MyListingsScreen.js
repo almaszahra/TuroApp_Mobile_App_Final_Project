@@ -12,14 +12,15 @@ import {
 } from 'react-native';
 import { db, auth } from '../firebaseConfig';
 import { collection, query, where, getDocs, doc, getDoc, updateDoc, arrayRemove, orderBy } from 'firebase/firestore';
-import { addDummyBookingsForOwner } from '../utils/addDummyBookings';
+// import { addDummyBookingsForOwner } from '../utils/addDummyBookings';
 import { colors } from '../styles/colors';
 
 export default function MyListingsScreen({ navigation }) {
   const [listings, setListings] = useState([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
-  const [addingDummyBookings, setAddingDummyBookings] = useState(false);
+  // Commented out for production
+  // const [addingDummyBookings, setAddingDummyBookings] = useState(false);
 
   // Fetch listings when component mounts
   useEffect(() => {
@@ -125,7 +126,8 @@ export default function MyListingsScreen({ navigation }) {
     fetchListings();
   };
 
-  // Function to add dummy bookings for testing
+  // Function to add dummy bookings for testing - Commented out for production
+  /*
   const handleAddDummyBookings = async () => {
     if (!auth.currentUser) return;
 
@@ -142,6 +144,7 @@ export default function MyListingsScreen({ navigation }) {
       setAddingDummyBookings(false);
     }
   };
+  */
 
   // Function to cancel a booking
   const handleCancelBooking = async (listingId, bookingId) => {
@@ -274,7 +277,7 @@ export default function MyListingsScreen({ navigation }) {
         </View>
       ) : (
         <>
-          {/* Add dummy bookings button for testing */}
+          {/* Add dummy bookings button for testing - Commented out for production
           <View style={styles.dummyBookingsContainer}>
             <TouchableOpacity
               style={[styles.dummyButton, addingDummyBookings && styles.dummyButtonDisabled]}
@@ -287,6 +290,7 @@ export default function MyListingsScreen({ navigation }) {
             </TouchableOpacity>
             <Text style={styles.dummyBookingsNote}>This button is for testing only. It adds random bookings to your listings.</Text>
           </View>
+          */}
         <FlatList
           data={listings}
           keyExtractor={(item) => item.id}

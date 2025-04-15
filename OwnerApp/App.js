@@ -6,7 +6,7 @@ import LoginScreen from './screens/LoginScreen';
 import OwnerHomeScreen from './screens/OwnerHomeScreen';
 import CreateListingScreen from './screens/CreateListingScreen';
 import MyListingsScreen from './screens/MyListingsScreen';
-import TestDBConnection from './screens/TestDBConnection';
+// import TestDBConnection from './screens/TestDBConnection';
 import { colors } from './styles/colors';
 
 const Stack = createStackNavigator();
@@ -61,12 +61,13 @@ export default function App() {
           options={{ title: 'My Car Listings' }}
         />
 
-        {/* Test Database Connection Screen */}
+        {/* Test Database Connection Screen - Commented out for production
         <Stack.Screen
           name="TestDBConnection"
           component={TestDBConnection}
           options={{ title: 'Database Connection Test' }}
         />
+        */}
       </Stack.Navigator>
     </NavigationContainer>
   );
