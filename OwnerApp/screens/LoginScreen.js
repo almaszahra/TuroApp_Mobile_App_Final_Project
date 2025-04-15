@@ -1,12 +1,13 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, Button, StyleSheet, Alert, TouchableOpacity } from 'react-native';
+import { View, Text, TextInput, StyleSheet, Alert, TouchableOpacity } from 'react-native';
 import { auth, db } from '../firebaseConfig';
 import { signInWithEmailAndPassword } from 'firebase/auth';
 import { doc, getDoc, setDoc, serverTimestamp } from 'firebase/firestore';
+import { colors } from '../styles/colors';
 
 export default function LoginScreen({ navigation }) {
-  const [email, setEmail] = useState('almas@owner.com');
-  const [password, setPassword] = useState('password123');
+  const [email, setEmail] = useState('owner1@test.com');
+  const [password, setPassword] = useState('owner1@test.com');
   const [accountType, setAccountType] = useState('owner'); // Default to owner since this is the Owner app
   const [loading, setLoading] = useState(false);
 
@@ -54,8 +55,24 @@ export default function LoginScreen({ navigation }) {
       // Navigate to home screen
       navigation.navigate('OwnerHome');
     } catch (error) {
-      console.error('Login error:', error.message);
-      Alert.alert('Login Failed', error.message);
+      // Handle different Firebase auth error codes with user-friendly messages
+      let errorMessage = 'An error occurred during login. Please try again.';
+
+      // Map common Firebase auth errors to user-friendly messages
+      if (error.code === 'auth/invalid-credential' || error.code === 'auth/invalid-email' || error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password') {
+        errorMessage = 'Invalid email or password. Please check your credentials and try again.';
+      } else if (error.code === 'auth/too-many-requests') {
+        errorMessage = 'Too many failed login attempts. Please try again later or reset your password.';
+      } else if (error.code === 'auth/network-request-failed') {
+        errorMessage = 'Network error. Please check your internet connection and try again.';
+      }
+
+      // Log error for debugging (only in development)
+      if (__DEV__) {
+        console.log('Login error code:', error.code);
+      }
+
+      Alert.alert('Login Failed', errorMessage);
     } finally {
       setLoading(false);
     }
@@ -63,7 +80,10 @@ export default function LoginScreen({ navigation }) {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Login</Text>
+      <View style={styles.headerContainer}>
+        <Text style={styles.title}>Car Owner Login</Text>
+        <Text style={styles.subtitle}>Sign in to manage your car listings</Text>
+      </View>
 
       {/* Account Type Selection */}
       <View style={styles.accountTypeContainer}>
@@ -73,28 +93,28 @@ export default function LoginScreen({ navigation }) {
             style={styles.radioOption}
             onPress={() => setAccountType('owner')}
           >
-            <View style={styles.radioButton}>
+            <View style={[styles.radioButton, accountType === 'owner' && styles.radioButtonActive]}>
               {accountType === 'owner' && <View style={styles.radioButtonSelected} />}
             </View>
-            <Text style={styles.radioText}>Owner</Text>
+            <Text style={[styles.radioText, accountType === 'owner' && styles.radioTextActive]}>Owner</Text>
           </TouchableOpacity>
 
           <TouchableOpacity
             style={styles.radioOption}
             onPress={() => setAccountType('renter')}
           >
-            <View style={styles.radioButton}>
+            <View style={[styles.radioButton, accountType === 'renter' && styles.radioButtonActive]}>
               {accountType === 'renter' && <View style={styles.radioButtonSelected} />}
             </View>
-            <Text style={styles.radioText}>Renter</Text>
+            <Text style={[styles.radioText, accountType === 'renter' && styles.radioTextActive]}>Renter</Text>
           </TouchableOpacity>
         </View>
       </View>
 
       <TextInput
         style={styles.input}
-        placeholder="Email- example@gmail.com"
-        placeholderTextColor="#999"
+        placeholder="Email"
+        placeholderTextColor={colors.textSecondary}
         value={email}
         onChangeText={setEmail}
         keyboardType="email-address"
@@ -104,20 +124,22 @@ export default function LoginScreen({ navigation }) {
       <TextInput
         style={styles.input}
         placeholder="Password"
-        placeholderTextColor="#999"
+        placeholderTextColor={colors.textSecondary}
         value={password}
         onChangeText={setPassword}
         secureTextEntry
       />
 
-      <Button
-        title={loading ? 'Logging in...' : 'Login'}
+      <TouchableOpacity
+        style={[styles.loginButton, loading && styles.loginButtonDisabled]}
         onPress={handleLogin}
         disabled={loading}
-      />
+      >
+        <Text style={styles.loginButtonText}>{loading ? 'Logging in...' : 'Login'}</Text>
+      </TouchableOpacity>
 
       <Text style={styles.testNote}>
-        Note: For testing, you can use almas@owner.com / password123
+        Note: For testing, use owner1@test.com / owner1@test.com
       </Text>
     </View>
   );
@@ -126,22 +148,42 @@ export default function LoginScreen({ navigation }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 16,
+    padding: 24,
     justifyContent: 'center',
+    backgroundColor: colors.background,
+  },
+  headerContainer: {
+    marginBottom: 32,
+    alignItems: 'center',
   },
   title: {
-    fontSize: 24,
+    fontSize: 28,
     fontWeight: 'bold',
-    marginBottom: 24,
+    marginBottom: 8,
+    textAlign: 'center',
+    color: colors.primary,
+  },
+  subtitle: {
+    fontSize: 16,
+    color: colors.textSecondary,
     textAlign: 'center',
   },
   accountTypeContainer: {
-    marginBottom: 20,
+    marginBottom: 24,
+    backgroundColor: colors.card,
+    padding: 16,
+    borderRadius: 8,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 2,
   },
   accountTypeLabel: {
     fontSize: 16,
     fontWeight: 'bold',
-    marginBottom: 8,
+    marginBottom: 12,
+    color: colors.text,
   },
   radioContainer: {
     flexDirection: 'row',
@@ -151,38 +193,68 @@ const styles = StyleSheet.create({
   radioOption: {
     flexDirection: 'row',
     alignItems: 'center',
+    paddingVertical: 8,
+    paddingHorizontal: 16,
   },
   radioButton: {
-    height: 20,
-    width: 20,
-    borderRadius: 10,
+    height: 22,
+    width: 22,
+    borderRadius: 11,
     borderWidth: 2,
-    borderColor: '#2a9d8f',
+    borderColor: colors.secondary,
     alignItems: 'center',
     justifyContent: 'center',
-    marginRight: 8,
+    marginRight: 10,
+  },
+  radioButtonActive: {
+    borderColor: colors.primary,
   },
   radioButtonSelected: {
-    height: 10,
-    width: 10,
-    borderRadius: 5,
-    backgroundColor: '#2a9d8f',
+    height: 12,
+    width: 12,
+    borderRadius: 6,
+    backgroundColor: colors.primary,
   },
   radioText: {
     fontSize: 16,
+    color: colors.textSecondary,
+  },
+  radioTextActive: {
+    color: colors.primary,
+    fontWeight: '600',
   },
   input: {
-    height: 50,
+    height: 54,
     borderWidth: 1,
-    borderColor: '#ccc',
-    borderRadius: 4,
+    borderColor: colors.border,
+    borderRadius: 8,
     marginBottom: 16,
-    paddingHorizontal: 8,
+    paddingHorizontal: 16,
+    backgroundColor: colors.card,
+    fontSize: 16,
+    color: colors.text,
+  },
+  loginButton: {
+    backgroundColor: colors.primary,
+    paddingVertical: 14,
+    borderRadius: 8,
+    alignItems: 'center',
+    marginTop: 8,
+  },
+  loginButtonDisabled: {
+    backgroundColor: colors.secondary,
+    opacity: 0.7,
+  },
+  loginButtonText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: 'bold',
   },
   testNote: {
-    marginTop: 20,
+    marginTop: 24,
     textAlign: 'center',
-    color: '#666',
+    color: colors.textSecondary,
     fontStyle: 'italic',
+    fontSize: 14,
   },
 });
