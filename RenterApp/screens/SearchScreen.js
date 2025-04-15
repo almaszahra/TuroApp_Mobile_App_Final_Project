@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, View, Text, Platform, SafeAreaView, TextInput, Image, Pressable,Modal, Button, TouchableOpacity, Alert } from "react-native";
+import { StyleSheet, View, Text, Platform, SafeAreaView, TextInput, Image, Pressable,Modal, Button, Alert } from "react-native";
 import MapView, { Marker } from "react-native-maps";
 import * as Location from 'expo-location';
-import { collection, getDocs, doc, updateDoc, arrayUnion, query, where } from 'firebase/firestore';
+import { collection, getDocs, doc, updateDoc, arrayUnion} from 'firebase/firestore';
 import { db, auth } from '../firebaseConfig';
 
 const SearchScreen = ({ navigation }) => {
@@ -30,12 +30,9 @@ const SearchScreen = ({ navigation }) => {
         navigation.navigate('Login');
         return;
       }
-
-      // Find all listings with bookings by this user
       const listingsRef = collection(db, 'carListings');
       const listingsSnapshot = await getDocs(listingsRef);
       
-      // Remove existing bookings for this user from all listings
       const updatePromises = listingsSnapshot.docs.map(async (doc) => {
         const listingData = doc.data();
         if (listingData.bookings) {
@@ -50,7 +47,6 @@ const SearchScreen = ({ navigation }) => {
       
       await Promise.all(updatePromises);
 
-      // Create new booking
       const newBooking = {
         id: Date.now().toString(),
         renterUid: auth.currentUser.uid,
@@ -61,13 +57,11 @@ const SearchScreen = ({ navigation }) => {
         status: 'confirmed'
       };
 
-      // Add new booking to the selected listing
       const listingRef = doc(db, 'carListings', listing.id);
       await updateDoc(listingRef, {
         bookings: arrayUnion(newBooking)
       });
 
-      // Show success message
       Alert.alert(
         'Booking Confirmed!',
         `Your booking has been confirmed!\n\nConfirmation Code: ${newBooking.confirmationCode}\nPickup Location: ${listing.address}, ${listing.city}`,
@@ -152,15 +146,20 @@ const SearchScreen = ({ navigation }) => {
       const listingsRef = collection(db, 'carListings');
       const snapshot = await getDocs(listingsRef);
       
+      console.log('Total listings found:', snapshot.size);
+      
       const geocodedListings = await Promise.all(
         snapshot.docs.map(async (doc) => {
           const listing = { id: doc.id, ...doc.data() };
+          console.log('Processing listing:', listing.id, listing.address, listing.city);
+          
           try {
             const locationResult = await Location.geocodeAsync(
               `${listing.address}, ${listing.city}`
             );
 
             if (locationResult && locationResult.length > 0) {
+              console.log('Geocoding successful for:', listing.id);
               return {
                 ...listing,
                 coordinate: {
@@ -169,6 +168,7 @@ const SearchScreen = ({ navigation }) => {
                 }
               };
             }
+            console.log('Geocoding failed for:', listing.id);
             return null;
           } catch (error) {
             console.error(`Geocoding error for listing ${listing.id}:`, error);
@@ -178,6 +178,8 @@ const SearchScreen = ({ navigation }) => {
       );
 
       const validListings = geocodedListings.filter(listing => listing !== null);
+      console.log('Valid listings after geocoding:', validListings.length);
+      
       setCarListings(validListings);
       setFilteredListings(validListings);
       setLoading(false);
@@ -228,12 +230,11 @@ const SearchScreen = ({ navigation }) => {
                 </Text>
                 
                 <View style={styles.buttonContainer}>
-                  <TouchableOpacity 
+                  <Button 
                     style={styles.bookButton}
+                    title="BOOK NOW"
                     onPress={() => handleBooking(selectedListing)}
-                  >
-                    <Text style={styles.bookButtonText}>BOOK NOW</Text>
-                  </TouchableOpacity>
+                  />
                 </View>
               </View>
             </>
@@ -345,7 +346,6 @@ const styles = StyleSheet.create({
   markerPrice: {
     fontSize: 14,
     fontWeight: 'bold',
-    color: '#2a9d8f',
   },
   modalContainer: {
     flex: 1,
@@ -377,32 +377,23 @@ const styles = StyleSheet.create({
   },
   licensePlate: {
     fontSize: 16,
-    color: '#666',
     marginBottom: 5,
   },
   price: {
     fontSize: 20,
-    color: '#2a9d8f',
     fontWeight: 'bold',
     marginBottom: 5,
   },
   ownerName: {
     fontSize: 16,
-    color: '#666',
     marginBottom: 20,
   },
   bookButton: {
-    backgroundColor: '#2a9d8f',
     padding: 10,
     borderRadius: 5,
     alignItems: 'center',
     justifyContent: 'center',
   },
-  bookButtonText: {
-    color: 'white',
-    fontSize: 16,
-    fontWeight: 'bold',
-  }
 });
 
 export default SearchScreen;
